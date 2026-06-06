@@ -54,9 +54,6 @@ jobs:
       HRX_REF: ${{ github.event.inputs.hrx_ref || '' }}
       ROCM_VERSION: ${{ github.event.inputs.rocm_version || '7.2.1' }}
       GGML_HRX_AMDGPU_TARGETS: ${{ github.event.inputs.amdgpu_targets || 'gfx1100' }}
-      HRX_SRC_DIR: ${{ runner.temp }}/hrx-src
-      HRX_BUILD_DIR: ${{ runner.temp }}/hrx-build
-      HRX_INSTALL_PREFIX: ${{ runner.temp }}/hrx-install
       LLAMA_BUILD_DIR: ${{ github.workspace }}/build-hrx
       GGML_HRX_BUILD_HIP_BENCHES: OFF
 
