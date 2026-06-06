@@ -1,0 +1,73 @@
+name: HRX build
+
+on:
+  workflow_dispatch:
+    inputs:
+      hrx_repository:
+        description: HRX git repository
+        required: false
+        default: https://github.com/ROCm/hrx.git
+      hrx_ref:
+        description: HRX ref to build. Leave empty for the repository default branch head.
+        required: false
+        default: ''
+      rocm_version:
+        description: ROCm apt repository version
+        required: false
+        default: 7.2.1
+      amdgpu_targets:
+        description: HRX HSACO AMDGPU targets
+        required: false
+        default: gfx1100
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/build-hrx.yml'
+      - 'scripts/hrx/**'
+      - 'ggml/src/ggml-hrx/**'
+      - 'ggml/include/ggml-hrx.h'
+      - 'ggml/CMakeLists.txt'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - '.github/workflows/build-hrx.yml'
+      - 'scripts/hrx/**'
+      - 'ggml/src/ggml-hrx/**'
+      - 'ggml/include/ggml-hrx.h'
+      - 'ggml/CMakeLists.txt'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu-latest-hrx:
+    runs-on: ubuntu-latest
+    env:
+      HRX_REPOSITORY: ${{ github.event.inputs.hrx_repository || 'https://github.com/ROCm/hrx.git' }}
+      HRX_REF: ${{ github.event.inputs.hrx_ref || '' }}
+      ROCM_VERSION: ${{ github.event.inputs.rocm_version || '7.2.1' }}
+      GGML_HRX_AMDGPU_TARGETS: ${{ github.event.inputs.amdgpu_targets || 'gfx1100' }}
+      HRX_SRC_DIR: ${{ runner.temp }}/hrx-src
+      HRX_BUILD_DIR: ${{ runner.temp }}/hrx-build
+      HRX_INSTALL_PREFIX: ${{ runner.temp }}/hrx-install
+      LLAMA_BUILD_DIR: ${{ github.workspace }}/build-hrx
+      GGML_HRX_BUILD_HIP_BENCHES: OFF
+
+    steps:
+      - name: Clone llama.cpp
+        uses: actions/checkout@v6
+
+      - name: Install ROCm build dependencies
+        run: scripts/hrx/install-rocm-deps.sh
+
+      - name: ccache
+        uses: ggml-org/ccache-action@v1.2.21
+        with:
+          key: ubuntu-latest-hrx-${{ env.ROCM_VERSION }}-${{ env.GGML_HRX_AMDGPU_TARGETS }}
+          evict-old-files: 1d
+          save: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+
+      - name: Build HRX and llama.cpp HRX backend
+        run: scripts/hrx/ci-build-hrx.sh
