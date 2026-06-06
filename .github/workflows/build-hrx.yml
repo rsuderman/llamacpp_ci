@@ -7,18 +7,22 @@ on:
         description: HRX git repository
         required: false
         default: https://github.com/ROCm/hrx.git
+        type: string
       hrx_ref:
         description: HRX ref to build. Leave empty for the repository default branch head.
         required: false
         default: ''
+        type: string
       rocm_version:
         description: ROCm apt repository version
         required: false
-        default: 7.2.1
+        default: '7.2.1'
+        type: string
       amdgpu_targets:
         description: HRX HSACO AMDGPU targets
         required: false
         default: gfx1100
+        type: string
   push:
     branches:
       - main
