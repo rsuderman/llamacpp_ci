@@ -13,10 +13,20 @@ on:
         required: false
         default: ''
         type: string
-      rocm_version:
-        description: ROCm apt repository version
+      hrx_release_type:
+        description: TheRock artifact release type
         required: false
-        default: '7.2.1'
+        default: nightly
+        type: string
+      hrx_run_id:
+        description: TheRock artifact run id. Leave empty for the latest complete Linux run.
+        required: false
+        default: ''
+        type: string
+      hrx_artifact_set:
+        description: TheRock ROCm artifact set
+        required: false
+        default: core-with-upstream-hip
         type: string
       amdgpu_targets:
         description: HRX HSACO AMDGPU targets
@@ -52,7 +62,9 @@ jobs:
     env:
       HRX_REPOSITORY: ${{ github.event.inputs.hrx_repository || 'https://github.com/ROCm/hrx.git' }}
       HRX_REF: ${{ github.event.inputs.hrx_ref || '' }}
-      ROCM_VERSION: ${{ github.event.inputs.rocm_version || '7.2.1' }}
+      HRX_RELEASE_TYPE: ${{ github.event.inputs.hrx_release_type || 'nightly' }}
+      HRX_RUN_ID: ${{ github.event.inputs.hrx_run_id || '' }}
+      HRX_ARTIFACT_SET: ${{ github.event.inputs.hrx_artifact_set || 'core-with-upstream-hip' }}
       GGML_HRX_AMDGPU_TARGETS: ${{ github.event.inputs.amdgpu_targets || 'gfx1100' }}
       LLAMA_BUILD_DIR: ${{ github.workspace }}/build-hrx
       GGML_HRX_BUILD_HIP_BENCHES: OFF
@@ -67,7 +79,7 @@ jobs:
       - name: ccache
         uses: ggml-org/ccache-action@v1.2.21
         with:
-          key: ubuntu-latest-${{ env.ROCM_VERSION }}-${{ env.GGML_HRX_AMDGPU_TARGETS }}
+          key: ubuntu-latest-${{ env.HRX_ARTIFACT_SET }}-${{ env.GGML_HRX_AMDGPU_TARGETS }}
           evict-old-files: 1d
           save: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 

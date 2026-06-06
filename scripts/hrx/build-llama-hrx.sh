@@ -23,13 +23,24 @@ fi
 CMAKE_PREFIX_PATH="${HRX_INSTALL_PREFIX}${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}"
 export CMAKE_PREFIX_PATH
 
+cmake_args=(
+    -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
+    -DGGML_HRX=ON
+    -DGGML_NATIVE=OFF
+    -DGGML_HRX_ROCM_PATH="${ROCM_PATH}"
+    -DGGML_HRX_AMDGPU_TARGETS="${GGML_HRX_AMDGPU_TARGETS}"
+    -DGGML_HRX_BUILD_HIP_BENCHES="${GGML_HRX_BUILD_HIP_BENCHES}"
+)
+
+if [[ -x "${ROCM_PATH}/lib/llvm/bin/amdclang" ]]; then
+    cmake_args+=(
+        -DCMAKE_C_COMPILER="${ROCM_PATH}/lib/llvm/bin/amdclang"
+        -DCMAKE_CXX_COMPILER="${ROCM_PATH}/lib/llvm/bin/amdclang++"
+    )
+fi
+
 cmake -S "${LLAMA_SRC_DIR}" -B "${LLAMA_BUILD_DIR}" -G "${CMAKE_GENERATOR}" \
-    -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-    -DGGML_HRX=ON \
-    -DGGML_NATIVE=OFF \
-    -DGGML_HRX_ROCM_PATH="${ROCM_PATH}" \
-    -DGGML_HRX_AMDGPU_TARGETS="${GGML_HRX_AMDGPU_TARGETS}" \
-    -DGGML_HRX_BUILD_HIP_BENCHES="${GGML_HRX_BUILD_HIP_BENCHES}" \
+    "${cmake_args[@]}" \
     "$@"
 
 build_args=(--build "${LLAMA_BUILD_DIR}" --config "${CMAKE_BUILD_TYPE}" -j "${LLAMA_BUILD_JOBS:-$(nproc)}")
