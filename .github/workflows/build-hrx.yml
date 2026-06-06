@@ -42,6 +42,7 @@ jobs:
       HRX_RELEASE_TYPE: ${{ github.event.inputs.hrx_release_type || 'nightly' }}
       HRX_RUN_ID: ${{ github.event.inputs.hrx_run_id || '' }}
       HRX_ARTIFACT_SET: ${{ github.event.inputs.hrx_artifact_set || 'core-with-upstream-hip' }}
+      CCACHE_COMPILERCHECK: content
 
     steps:
       - name: Checkout CI scripts
