@@ -28,28 +28,17 @@ on:
         required: false
         default: core-with-upstream-hip
         type: string
-      amdgpu_targets:
-        description: HRX HSACO AMDGPU targets
-        required: false
-        default: gfx1100
-        type: string
   push:
     branches:
       - main
     paths:
       - '.github/workflows/build-hrx.yml'
       - 'scripts/hrx/**'
-      - 'ggml/src/ggml-hrx/**'
-      - 'ggml/include/ggml-hrx.h'
-      - 'ggml/CMakeLists.txt'
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '.github/workflows/build-hrx.yml'
       - 'scripts/hrx/**'
-      - 'ggml/src/ggml-hrx/**'
-      - 'ggml/include/ggml-hrx.h'
-      - 'ggml/CMakeLists.txt'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
@@ -65,9 +54,6 @@ jobs:
       HRX_RELEASE_TYPE: ${{ github.event.inputs.hrx_release_type || 'nightly' }}
       HRX_RUN_ID: ${{ github.event.inputs.hrx_run_id || '' }}
       HRX_ARTIFACT_SET: ${{ github.event.inputs.hrx_artifact_set || 'core-with-upstream-hip' }}
-      GGML_HRX_AMDGPU_TARGETS: ${{ github.event.inputs.amdgpu_targets || 'gfx1100' }}
-      LLAMA_BUILD_DIR: ${{ github.workspace }}/build-hrx
-      GGML_HRX_BUILD_HIP_BENCHES: OFF
 
     steps:
       - name: Clone llama.cpp
@@ -79,9 +65,9 @@ jobs:
       - name: ccache
         uses: ggml-org/ccache-action@v1.2.21
         with:
-          key: ubuntu-latest-${{ env.HRX_ARTIFACT_SET }}-${{ env.GGML_HRX_AMDGPU_TARGETS }}
+          key: ubuntu-latest-${{ env.HRX_ARTIFACT_SET }}
           evict-old-files: 1d
           save: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-      - name: Build HRX and llama.cpp HRX backend
+      - name: Build HRX
         run: scripts/hrx/ci-build-hrx.sh
