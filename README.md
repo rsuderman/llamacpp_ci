@@ -55,6 +55,18 @@ Run the same HRX build flow locally with:
 scripts/hrx/local-build-hrx.sh
 ```
 
+Build the HRX+llama.cpp HRX flow locally with:
+
+```sh
+scripts/hrx/local-build-llama.sh
+```
+
+Prepare source checkouts and ROCm assets locally with:
+
+```sh
+scripts/hrx/local-build-setup.sh
+```
+
 By default, local generated files are placed under ignored paths:
 
 ```text
@@ -63,12 +75,29 @@ assets/hrx-rocm-root
 assets/hrx-rocm-downloads
 build-hrx
 build-hrx-install
+assets/llama-src
+assets/llama-src/build-hrx
 ```
 
-The local wrapper calls the same shared build sequence as CI:
+For `local-build-hrx.sh` to run correctly, run `local-build-setup.sh` first (or otherwise ensure sources and assets are already prepared), then it runs:
 
 ```text
-scripts/hrx/run-build.sh
+scripts/hrx/build-hrx.sh
+scripts/hrx/validate-hrx.sh
+```
+
+`scripts/hrx/local-build-llama.sh` runs:
+
+```text
+scripts/hrx/build-llama-hrx.sh
+```
+
+`scripts/hrx/local-build-setup.sh` runs:
+
+```text
+scripts/hrx/checkout-hrx.sh
+scripts/hrx/checkout-llama.sh
+scripts/hrx/fetch-rocm-assets.sh
 ```
 
 ## Script Layout
@@ -84,6 +113,8 @@ scripts/hrx/run-build.sh
 - `scripts/hrx/build-llama-hrx.sh`: configures and builds llama.cpp with the HRX backend.
 - `scripts/hrx/run-build.sh`: full HRX checkout, ROCm asset fetch, build, and validation flow.
 - `scripts/hrx/local-build-hrx.sh`: local entrypoint using ignored repo-local output paths.
+- `scripts/hrx/local-build-llama.sh`: local entrypoint for full HRX + llama.cpp HRX build flow.
+- `scripts/hrx/local-build-setup.sh`: local setup entrypoint for repository checkouts and ROCm asset fetch.
 - `scripts/hrx/ci-build-hrx.sh`: CI entrypoint.
 
 ## Notes
