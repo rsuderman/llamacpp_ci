@@ -5,13 +5,22 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 . "${SCRIPT_DIR}/env.sh"
 
-GGML_HRX_AMDGPU_TARGETS="${GGML_HRX_AMDGPU_TARGETS:-gfx1100}"
 GGML_HRX_BUILD_HIP_BENCHES="${GGML_HRX_BUILD_HIP_BENCHES:-OFF}"
 LLAMA_BUILD_TARGET="${LLAMA_BUILD_TARGET:-}"
 
 if [[ -z "${ROCM_PATH:-}" ]]; then
     ROCM_PATH="${HRX_ROCM_ROOT}"
-    export ROCM_PATH
+fi
+export ROCM_PATH
+
+if [[ -z "${GGML_HRX_AMDGPU_TARGETS:-}" ]]; then
+    GGML_HRX_AMDGPU_TARGETS=""
+    if [[ -x "${ROCM_PATH}/bin/rocminfo" ]]; then
+        GGML_HRX_AMDGPU_TARGETS="$("${ROCM_PATH}/bin/rocminfo" 2>/dev/null | grep -oE 'gfx[0-9]+[a-zA-Z]*' | head -n 1 || true)"
+    fi
+
+    GGML_HRX_AMDGPU_TARGETS="${GGML_HRX_AMDGPU_TARGETS:-gfx1100}"
+    export GGML_HRX_AMDGPU_TARGETS
 fi
 
 CMAKE_PREFIX_PATH="${HRX_INSTALL_PREFIX}${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}"

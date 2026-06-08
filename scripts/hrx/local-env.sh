@@ -11,7 +11,7 @@
 : "${HRX_INSTALL_PREFIX:=${HRX_WORK_DIR}/build-hrx-install}"
 
 : "${LLAMA_SRC_DIR:=${HRX_WORK_DIR}/assets/llama-src}"
-: "${LLAMA_BUILD_DIR:=${LLAMA_SRC_DIR}/build-hrx}"
+: "${LLAMA_BUILD_DIR:=${HRX_WORK_DIR}/build-llama-hrx}"
 
 export HRX_WORK_DIR
 export HRX_SRC_DIR HRX_ROCM_ROOT HRX_DOWNLOAD_CACHE_DIR
