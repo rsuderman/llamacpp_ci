@@ -5,11 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 . "${SCRIPT_DIR}/env.sh"
 
-python3 "${HRX_SRC_DIR}/build_tools/ci_core_linux.py" fetch-rocm
-
-if [[ -n "${HRX_EXTRA_ROCM_ARTIFACTS}" ]]; then
-    python3 "${SCRIPT_DIR}/fetch-extra-rocm-assets.py"
-fi
+python3 "${SCRIPT_DIR}/fetch-rocm-assets.py"
 
 export ROCM_PATH="${HRX_ROCM_ROOT}"
 export CMAKE_PREFIX_PATH="${HRX_ROCM_ROOT}${CMAKE_PREFIX_PATH:+:${CMAKE_PREFIX_PATH}}"

@@ -33,7 +33,7 @@ It performs these steps:
 2. Install base build dependencies.
 3. Restore/configure ccache.
 4. Check out the pinned HRX revision.
-5. Fetch ROCm assets using HRX's asset-fetching support.
+5. Fetch ROCm assets using this repository's TheRock artifact fetcher.
 6. Configure, build, and install HRX with `amdclang` and `amdclang++` from those assets.
 7. Validate the HRX install with `hrx-info --device=cpu:0`.
 8. Check out pinned `ROCm/llama.cpp`.
@@ -106,7 +106,7 @@ scripts/hrx/fetch-rocm-assets.sh
 - `scripts/hrx/env.sh`: shared default environment values.
 - `scripts/hrx/checkout-repo.sh`: exact checkout helper used by HRX and llama.cpp checkout scripts.
 - `scripts/hrx/checkout-hrx.sh`: checks out pinned HRX.
-- `scripts/hrx/fetch-rocm-assets.sh`: fetches and exposes ROCm assets.
+- `scripts/hrx/fetch-rocm-assets.sh`: fetches and exposes ROCm assets, including the default `rocwmma_dev_gfx110X-all` header artifact.
 - `scripts/hrx/build-hrx.sh`: configures and builds HRX.
 - `scripts/hrx/validate-hrx.sh`: validates the installed HRX runtime with a CPU smoke test.
 - `scripts/hrx/checkout-llama.sh`: checks out pinned ROCm/llama.cpp.
